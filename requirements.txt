@@ -1,5 +1,6 @@
 click==6.7
-Flask==0.12
+flask
+
 Flask-WTF==0.14.2
 gunicorn==19.6.0
 itsdangerous==0.24
