@@ -21,23 +21,28 @@ def index():
     """Render website's initial page and let VueJS take over."""
     return render_template('index.html')
 
-@app.route('/api/upload', methods=["POST"])
+
+    
+@app.route('/api/upload', methods=['POST'])
 def upload():
     form= UploadForm()
-    if form.validate_on_submit():
+    
+    if request.method=='POST' and form.validate_on_submit():
+        photo = form.photo.data
+        filename = secure_filename(photo.filename)
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         description = form.description.data
-        photoData = form.photo.data
-        filename = secure_filename(photoData.filename)
         
-        try:
-            photoData.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            return jsonify(message="201", filename=filename, description=description)
-        except Exception as e:
-            pass
-
-    return jsonify(errors=form_errors(form))
-    
-    
+        result = [{
+            'message': 'File Successfully Uploaded',
+            'filename': filename,
+            'Description': description
+            
+        }]
+        return jsonify(result= result )
+    error_retrieval = form_errors(form)
+    error = [{'errors': error_retrieval}]
+    return jsonify(errors=error)
     
     
 # Here we define a function to collect form errors from Flask-WTF
